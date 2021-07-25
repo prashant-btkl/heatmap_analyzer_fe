@@ -1,2 +1,2 @@
-# heatmap_analyzer_fe
+# heatmap_analyzer
 frontend for heatmap_analyzer
