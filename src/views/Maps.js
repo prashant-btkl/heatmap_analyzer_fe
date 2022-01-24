@@ -1,46 +1,40 @@
-import _ from 'lodash';
-import h337 from 'heatmap.js';
-import ReactDOM, { render } from 'react-dom';
-import React, {Component, PropTypes} from 'react';
+import React from "react";
+import { Map as LeafletMap, TileLayer, Marker, Popup } from "react-leaflet";
+import "../node_modules/leaflet/dist/leaflet.css";
 
-class ReactHeatmap extends Component {
+import HeatmapLayer from "react-leaflet-heatmap-layer";
+import { geojson } from "./atd";
 
-  constructor(props, context) {
-    super(props, context);
-    this.state = { cfg: null };
-  }
-
-  componentDidMount(){
-    const { style, data, config } = this.props;
-    let c = config || {};
-    let _container = ReactDOM.findDOMNode(this);
-    let defaultCfg = {
-      width: style.width.replace('px','') || _container.offsetWidth,
-      height: style.height.replace('px','') || _container.offsetHeight,
+class Map extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      lat: 51.505,
+      lng: -0.09,
+      zoom: 13
     };
-    let _cfg = _.merge( defaultCfg, c );
-    _cfg.container = _container;
-    this.heatmapInstance = h337.create( _cfg );
-    this.setState({ cfg: _cfg });
-    this.heatmapInstance.setData( data );
   }
 
-  componentWillReceiveProps(nextProps){
-    return nextProps != this.props;
-  }
-
-  shouldComponentUpdate(nextProps){
-    return nextProps != this.props;
-  }
-
-  render(){
-
+  render() {
+    const position = [this.state.lat, this.state.lng];
     return (
-      <div ref="react-heatmap"></div>
+      <LeafletMap center={position} zoom={this.state.zoom}>
+        <HeatmapLayer
+          fitBoundsOnLoad
+          fitBoundsOnUpdate
+          points={geojson.features}
+          longitudeExtractor={m => m.geometry.coordinates[0]}
+          latitudeExtractor={m => m.geometry.coordinates[1]}
+          intensityExtractor={m => parseFloat(m.geometry.coordinates[1])}
+        />
+
+        <TileLayer
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
+        />
+      </LeafletMap>
     );
-
   }
-
 }
 
-export default ReactHeatmap;
+export default Map;

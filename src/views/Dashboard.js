@@ -1,5 +1,6 @@
  import React from "react";
  import ChartistGraph from "react-chartist";
+ import h337 from "heatmap.js";
 // react-bootstrap components
 import {
   Badge,
@@ -16,20 +17,30 @@ import {
   Tooltip,
 } from "react-bootstrap";
 class Dashboard extends React.Component {
-  state = {
-    page_id : "",
-    xy : {}
+  constructor(props){
+    super(props);
+    this.state = {
+      page_id : "",
+      xy : []
+    }
   }
 
 
   handleSubmit = (event) => {
-    this.setState({page_id: this.element.value});
-    alert('A form was submitted: ' +this.element.value);
+    this.setState({page_id: this.element.value}, () =>
+     console.log(this.state.page_id));
 
     fetch(`http://127.0.0.1:5000/get_xy/${this.element.value}`)
-        .then(res => res.json())
+        .then((res) => res.json())
         .then((data) => {
-          this.setState({ xy : data })
+          this.setState({ xy : data }, () => {
+            var heatmapInstance = h337.create({
+            // only container is required, the rest will be defaults
+            container: document.querySelector('.heatmap')
+            });
+            console.log("I am being called", this.state.xy["data"])
+            heatmapInstance.setData({max: 1, data: this.state.xy["data"]});
+          })
         })
         .catch(console.log)
 
@@ -71,21 +82,15 @@ render() {
               <Card.Header>
                 <Card.Title as="h4">Heatmaps</Card.Title>
               </Card.Header>
-              <Card.Body>
-                
-              </Card.Body>
+                <Card.Body>
+                  <div className="heatmap">
+
+                      <h1>Hello Heatmaps</h1>
+                      
+                      <h2>Submit the page id to see heatmaps!</h2>
+                  </div>
+                </Card.Body>
               <Card.Footer>
-                <div className="legend">
-                  <i className="fas fa-circle text-info"></i>
-                  Open <i className="fas fa-circle text-danger"></i>
-                  Click <i className="fas fa-circle text-warning"></i>
-                  Click Second Time
-                </div>
-                <hr></hr>
-                <div className="stats">
-                  <i className="fas fa-history"></i>
-                  Updated 3 minutes ago
-                </div>
               </Card.Footer>
             </Card>
           </Col>
