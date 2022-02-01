@@ -1,6 +1,6 @@
  import React from "react";
- import ChartistGraph from "react-chartist";
  import h337 from "heatmap.js";
+ import webpage from "assets/img/91092828-2644-4d9d-b0a2-09f06f23f6fd.png";
 // react-bootstrap components
 import {
   Badge,
@@ -15,6 +15,7 @@ import {
   Form,
   OverlayTrigger,
   Tooltip,
+  Image,
 } from "react-bootstrap";
 class Dashboard extends React.Component {
   constructor(props){
@@ -35,11 +36,11 @@ class Dashboard extends React.Component {
         .then((data) => {
           this.setState({ xy : data }, () => {
             var heatmapInstance = h337.create({
-            // only container is required, the rest will be defaults
-            container: document.querySelector('.heatmap')
+            container: document.querySelector('.heatmap'),
+            radius: 30
             });
-            console.log("I am being called", this.state.xy["data"])
-            heatmapInstance.setData({max: 1, data: this.state.xy["data"]});
+            heatmapInstance.setData({max: 2, data: this.state.xy["data"]});
+            console.log("heatmap image url : ",heatmapInstance.getDataURL());
           })
         })
         .catch(console.log)
@@ -51,22 +52,23 @@ render() {
  return (
   <>
     <Container fluid>
-    <Row>
-      <Col lg="5" sm="3">  
-        <Card className="card-stats">
+    <Row>      
+      <Col lg="5" sm="3"> 
+        <Card>
+        <Card.Header>Enter Page ID</Card.Header>
         <Card.Header>
-                <Card.Title as="h5">submit page id</Card.Title>
         </Card.Header>
-          <Card.Body>
-                <form onSubmit={this.handleSubmit}>
-                  <label>
-                    Page ID:
-                    <input type="text" ref={el => this.element = el} name="page_id" />
-                  </label>
-                  <input type="submit" value="Submit" />
-                </form>
-          </Card.Body>
-          <Card.Footer>
+        <Card.Body>
+        <Form onSubmit={this.handleSubmit}>
+          <Form.Group className="mb-3">
+            <Form.Control type="text" ref={el => this.element = el} name="page_id" placeholder="Enter page id" />
+          </Form.Group>
+          <Button variant="primary" type="submit">
+            Submit
+          </Button>
+        </Form>
+        </Card.Body>
+        <Card.Footer>
                 <hr></hr>
                 <div className="stats">
                   <i className="fas fa-history"></i>
@@ -75,26 +77,20 @@ render() {
               </Card.Footer>
         </Card>
       </Col>
-      </Row>
-      <Row>
-          <Col md="11">
-            <Card>
-              <Card.Header>
-                <Card.Title as="h4">Heatmaps</Card.Title>
-              </Card.Header>
-                <Card.Body>
-                  <div className="heatmap">
 
-                      <h1>Hello Heatmaps</h1>
-                      
-                      <h2>Submit the page id to see heatmaps!</h2>
-                  </div>
-                </Card.Body>
-              <Card.Footer>
-              </Card.Footer>
+      </Row>
+
+      <Row>
+      <Col lg="15" sm="15">
+            <Card>
+              <Card.Body>
+                <div className="heatmap" fluid>
+                  <Image src={webpage} alt="webpage image"/>
+                </div>
+              </Card.Body>
             </Card>
-          </Col>
-        </Row>
+      </Col>
+      </Row>
     </Container>
     </>
   );
